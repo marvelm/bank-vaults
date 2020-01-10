@@ -88,6 +88,15 @@ kubectl apply -f operator/deploy/cr-priority.yaml
 waitfor kubectl get pod/vault-0
 kubectl wait --for=condition=ready pod/vault-0 --timeout=120s
 
+# Fourth test: Raft HA setup
+kubectl apply -f operator/deploy/cr-raft.yaml
+waitfor kubectl get pod/vault-2
+kubectl wait --for=condition=ready pod/vault-2 --timeout=120s
+kubectl delete -f operator/deploy/cr-raft.yaml
+kubectl wait --for=delete pod/vault-0 --timeout=120s || true
+kubectl wait --for=delete pod/vault-1 --timeout=120s || true
+kubectl wait --for=delete pod/vault-2 --timeout=120s || true
+
 # Run a client test
 
 # Give bank-vaults some time to let the Kubernetes auth backend configuration happen
